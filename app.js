@@ -1,4 +1,5 @@
-import {app} from "mu";
-app.get('/', function( req, res ) {
-  res.send('hello world')
+import {app, query, sparqlEscapeString, sparqlEscapeUri} from "mu";
+
+app.delete('/:id', function( req, res ) {
+  // hello
 });
