@@ -1,2 +1,2 @@
-FROM semtech/mu-javascript-template
-LABEL maintainer="madnificent@gmail.com"
+FROM nvdk/mu-javascript-template
+LABEL maintainer=info@redpencil.io

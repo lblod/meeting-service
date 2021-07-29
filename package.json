@@ -1,0 +1,21 @@
+{
+  "name": "meeting-service",
+  "version": "1.0.0",
+  "description": "Work in progress",
+  "main": "app.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lblod/meeting-serive.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lblod/meeting-serive/issues"
+  },
+  "homepage": "https://github.com/lblod/meeting-serive#readme"
+}
