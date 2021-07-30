@@ -5,10 +5,11 @@ app.get('/', function( req, res ) {
 });
 
 app.delete('/:id', async function( req, res ) {
+  debugger;
   const uri="http://data.lblod.info/id/zittingen/"+req.params.id;
     
   // Keep documents
-  const updateQuery=`
+  const updateDocQuery=`
   PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
   PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
   PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
@@ -29,9 +30,74 @@ app.delete('/:id', async function( req, res ) {
     ?containerId ext:editorDocumentStatus ?statusId.
   }
   `;
-  let response=await update(updateQuery);
+  let response=await update(updateDocQuery);
+  console.log(response);
   
-  const deleteQuery=`
+  //Delete votes
+  const deleteVotesQuery=`
+  PREFIX dct: <http://purl.org/dc/terms/>
+  PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+  DELETE {
+    ?voteId ?voteP ?voteO.
+  }
+  WHERE {
+    ${sparqlEscapeUri(uri)} besluit:behandelt ?apId.
+    ?apId ?apP ?apO.
+    ?treatmentId dct:subject ?apId.
+    ?treatmentId besluit:heeftStemming ?voteId.
+    ?voteId ?voteP ?voteO.
+  }
+  `;
+  response=await update(deleteVotesQuery);
+  console.log(response);
+
+  //Delete treatments 
+  const deleteTreatmentQuery=`
+  PREFIX dct: <http://purl.org/dc/terms/>
+  PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+  DELETE {
+    ?treatmentId ?treatmentP ?treatmentO.
+  }
+  WHERE {
+    ${sparqlEscapeUri(uri)} besluit:behandelt ?apId.
+    ?apId ?apP ?apO.
+    ?treatmentId dct:subject ?apId.
+    ?treatmentId ?treatmentP ?treatmentO.
+  }
+  `;
+  response=await update(deleteTreatmentQuery);
+  console.log(response);
+  
+  //Delete agenda points,
+  const deleteApQuery=`
+  PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+  DELETE {
+    ?apId ?apP ?apO.
+  }
+  WHERE {
+    ${sparqlEscapeUri(uri)} besluit:behandelt ?apId.
+    ?apId ?apP ?apO.
+  }
+  `;
+  response=await update(deleteApQuery);
+  console.log(response);
+
+  //Delete intermissions
+  const deleteIntermissionQuery=`
+  PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+  DELETE {
+    ?intermissionId ?intermissionP ?intermissionO.
+  }
+  WHERE {
+    ${sparqlEscapeUri(uri)} ext:hasIntermission ?intermissionId.
+    ?intermissionId ?intermissionP ?intermissionO.
+  }
+  `;
+  response=await update(deleteIntermissionQuery);
+  console.log(response);  
+
+  //delete meeting
+  const deleteMeetingQuery=`
   DELETE {
     ?meetindId ?meetingP ?meetingO.
   }
@@ -40,10 +106,9 @@ app.delete('/:id', async function( req, res ) {
     ?meetindId ?meetingP ?meetingO.
   }
   `;
-  response=await update(deleteQuery);
-  
+  response=await update(deleteMeetingQuery);
+  console.log(response);
   res.sendStatus(204);
-  //TODO: Delete treatments, intermissions, participants, agenda points, votes
 });
 
 app.use(errorHandler);
