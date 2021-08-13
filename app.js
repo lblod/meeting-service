@@ -1,15 +1,15 @@
 import { app, update, query, sparqlEscapeUri, errorHandler } from 'mu';
 
-app.get('/', function( req, res ) {
+app.get('/', function (req, res) {
   res.send('Hello mu-javascript-template');
 });
 
-app.delete('/:id', async function( req, res ) {
-  
-  const meetingId="http://data.lblod.info/id/zittingen/"+req.params.id;
-  
+app.delete('/:id', async function (req, res) {
+
+  const meetingId = "http://data.lblod.info/id/zittingen/" + req.params.id;
+
   // Get all needed ids
-  const idQuery=`
+  const idQuery = `
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
     PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
@@ -36,82 +36,82 @@ app.delete('/:id', async function( req, res ) {
   `;
   let result;
   try {
-    result=await query(idQuery);
+    result = await query(idQuery);
   } catch (error) {
     console.log(error);
     res.sendStatus(404);
     return;
-  }  
-
-  let behandelingIds=[];
-  let apIds=[];
-  let voteIds=[];
-  let intermissionIds=[];
-  let containerIds=[];
-
-  for(let i=0; i<result.results.bindings.length; i++){
-    let element=result.results.bindings[i];
-    
-    if(element.behandelingId)
-     behandelingIds.includes(element.behandelingId.value) ? null : behandelingIds.push(element.behandelingId.value);
-    if (element.apId)
-      apIds.includes(element.apId.value) ? null : apIds.push(element.apId.value)
-    if(element.voteId)
-      voteIds.includes(element.voteId.value) ? null : voteIds.push(element.voteId.value);
-    if(element.intermissionId)
-      intermissionIds.includes(element.intermissionId.value) ? null : intermissionIds.push(element.intermissionId.value);
-    if(element.containerId)
-      containerIds.includes(element.containerId.value) ? null : containerIds.push(element.containerId.value);
-    
   }
 
-  const queryIds={behandelingIds, apIds, voteIds, intermissionIds, containerIds}
-  
-  let updateContainerQuery='';
-  let deleteContainerQuery='';
-  let deleteVotesQuery='';
-  let deleteTreatmentQuery='';
-  let deleteAgendaPointsQuery='';
-  let deleteIntermissionQuery='';
-  
-  queryIds.containerIds.forEach((e, i)=>{
-    updateContainerQuery+=`
+  let behandelingIds = [];
+  let apIds = [];
+  let voteIds = [];
+  let intermissionIds = [];
+  let containerIds = [];
+
+  for (let i = 0; i < result.results.bindings.length; i++) {
+    let element = result.results.bindings[i];
+
+    if (element.behandelingId)
+      behandelingIds.includes(element.behandelingId.value) ? null : behandelingIds.push(element.behandelingId.value);
+    if (element.apId)
+      apIds.includes(element.apId.value) ? null : apIds.push(element.apId.value)
+    if (element.voteId)
+      voteIds.includes(element.voteId.value) ? null : voteIds.push(element.voteId.value);
+    if (element.intermissionId)
+      intermissionIds.includes(element.intermissionId.value) ? null : intermissionIds.push(element.intermissionId.value);
+    if (element.containerId)
+      containerIds.includes(element.containerId.value) ? null : containerIds.push(element.containerId.value);
+
+  }
+
+  const queryIds = { behandelingIds, apIds, voteIds, intermissionIds, containerIds }
+
+  let updateContainerQuery = '';
+  let deleteContainerQuery = '';
+  let deleteVotesQuery = '';
+  let deleteTreatmentQuery = '';
+  let deleteAgendaPointsQuery = '';
+  let deleteIntermissionQuery = '';
+
+  queryIds.containerIds.forEach((e, i) => {
+    updateContainerQuery += `
      ${sparqlEscapeUri(e)} ext:editorDocumentStatus <http://mu.semte.ch/application/concepts/a1974d071e6a47b69b85313ebdcef9f7>.
     `;
-    deleteContainerQuery+=`
+    deleteContainerQuery += `
      ${sparqlEscapeUri(e)} ext:editorDocumentStatus ?statusId${i}.
     `;
   });
-  
-  queryIds.voteIds.forEach((e, i)=>{
-    deleteVotesQuery+=`
+
+  queryIds.voteIds.forEach((e, i) => {
+    deleteVotesQuery += `
      ${sparqlEscapeUri(e)} ?voteP${i} ?voteO${i}.
     `;
   });
 
-  queryIds.behandelingIds.forEach((e, i)=>{
-    deleteTreatmentQuery+=`
+  queryIds.behandelingIds.forEach((e, i) => {
+    deleteTreatmentQuery += `
      ${sparqlEscapeUri(e)} ?treatmentP${i} ?treatmentO${i}.
     `;
   });
 
-  queryIds.apIds.forEach((e, i)=>{
-    deleteAgendaPointsQuery+=`
+  queryIds.apIds.forEach((e, i) => {
+    deleteAgendaPointsQuery += `
      ${sparqlEscapeUri(e)} ?apP${i} ?apO${i}.
     `;
   });
 
-  queryIds.intermissionIds.forEach((e, i)=>{
-    deleteIntermissionQuery+=`
+  queryIds.intermissionIds.forEach((e, i) => {
+    deleteIntermissionQuery += `
      ${sparqlEscapeUri(e)} ?intermissionP${i} ?intermissionO${i}.
     `;
   });
 
-  let deleteMeetingQuery=`
+  let deleteMeetingQuery = `
     ${sparqlEscapeUri(meetingId)} ?meetingP ?meetingO.
   `;
 
-  const updateQuery=`
+  const updateQuery = `
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
     PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
     PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
@@ -136,9 +136,9 @@ app.delete('/:id', async function( req, res ) {
       ${deleteMeetingQuery}
     }
   `;
-  
+
   try {
-    result=await update(updateQuery);
+    result = await update(updateQuery);
     res.sendStatus(204);
   } catch (error) {
     console.log(error);
