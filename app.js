@@ -11,16 +11,15 @@ app.delete('/:id', async function (req, res) {
   // Get all needed ids
   const query = `
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
-    PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
     PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
     PREFIX dct: <http://purl.org/dc/terms/>
     DELETE{
       ?containerId ext:editorDocumentStatus ?statusId.
-      ${sparqlEscapeUri(meetingId)} ?meetingP ?meetingO.
+      ?voteId ?voteP ?voteO.
+      ?behandelingId ?behandelingP ?behandelingO.
       ?apId ?apP ?apO.
       ?intermissionId ?intermissionP ?intermissionO.
-      ?behandelingId ?behandelingP ?behandelingO.
-      ?voteId ?voteP ?voteO.
+      ${sparqlEscapeUri(meetingId)} ?meetingP ?meetingO.
     }
     INSERT{
       ?containerId ext:editorDocumentStatus <http://mu.semte.ch/application/concepts/a1974d071e6a47b69b85313ebdcef9f7>. 
@@ -39,14 +38,15 @@ app.delete('/:id', async function (req, res) {
       OPTIONAL{
         ?behandelingId dct:subject ?apId.
         ?behandelingId ?behandelingP ?behandelingO.
-      }
-      OPTIONAL{ 
-        ?behandelingId besluit:heeftStemming ?voteId.
-        ?voteId ?voteP ?voteO.
+        ?behandelingId2 ?behandelingP ?behandelingO.
       }
       OPTIONAL{
         ?behandelingId ext:hasDocumentContainer ?containerId.
         ?containerId ext:editorDocumentStatus ?statusId.
+      }
+      OPTIONAL{ 
+        ?behandelingId2 besluit:heeftStemming ?voteId.
+        ?voteId ?voteP ?voteO.
       }
     }
   `;
