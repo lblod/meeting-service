@@ -30,21 +30,22 @@ app.delete('/:id', async function (req, res) {
       OPTIONAL{
         ${sparqlEscapeUri(meetingId)} besluit:behandelt ?apId.
         ?apId ?apP ?apO.
+        ?behandelingId dct:subject ?apId.
+        ?behandelingId ?behandelingP ?behandelingO.
       }
       OPTIONAL{
         ${sparqlEscapeUri(meetingId)} ext:hasIntermission ?intermissionId.
         ?intermissionId ?intermissionP ?intermissionO.
       } 
       OPTIONAL{
-        ?behandelingId dct:subject ?apId.
-        ?behandelingId ?behandelingP ?behandelingO.
-        ?behandelingId2 ?behandelingP ?behandelingO.
-      }
-      OPTIONAL{
-        ?behandelingId ext:hasDocumentContainer ?containerId.
+        ${sparqlEscapeUri(meetingId)} besluit:behandelt ?apId1.
+        ?behandelingId1 dct:subject ?apId1.
+        ?behandelingId1 ext:hasDocumentContainer ?containerId.
         ?containerId ext:editorDocumentStatus ?statusId.
       }
       OPTIONAL{ 
+        ${sparqlEscapeUri(meetingId)} besluit:behandelt ?apId2.
+        ?behandelingId2 dct:subject ?apId2.
         ?behandelingId2 besluit:heeftStemming ?voteId.
         ?voteId ?voteP ?voteO.
       }
