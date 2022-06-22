@@ -13,13 +13,19 @@ app.delete('/:id', async function (req, res) {
     PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
     PREFIX dct: <http://purl.org/dc/terms/>
     PREFIX sign: <http://mu.semte.ch/vocabularies/ext/signing/>
+		PREFIX bv: <http://data.vlaanderen.be/ns/besluitvorming#>
     SELECT ?o1
     WHERE {
-      ${sparqlEscapeUri(meetingId)} ?p1 ?o1 .
-      ?o2 ?p2 ?o1.
+      ${sparqlEscapeUri(meetingId)} besluit:heeftBesluitenlijst | 
+																		ext:hasVersionedNotulen | 
+																		ext:hasVersionedBehandeling | 
+																		^bv:isAgendaVoor ?o1 .
+      ?o2 ext:publishesBesluitenlijst |
+				  ext:publishesNotulen | 
+					ext:publishesBehandeling | 
+					ext:publishesAgenda ?o1.
       ?o2 a sign:PublishedResource.
     }
-		LIMIT 1
   `;
 
 	// Get all needed ids
@@ -68,6 +74,7 @@ app.delete('/:id', async function (req, res) {
 	try {
 		const publishedResourcesResult = await update(publishedResourceQuery);
 		if (publishedResourcesResult.results.bindings.length) {
+			console.log(publishedResourcesResult.results.bindings);
 			res.sendStatus(409);
 		} else {
 			await update(deletionQuery);
