@@ -1,10 +1,10 @@
 import { app, update, query, sparqlEscapeUri, errorHandler } from "mu";
 
-app.get("/", function (req, res) {
+app.get('/', function (req, res) {
 	res.send("Hello mu-javascript-template");
 });
 
-app.delete("/:id", async function (req, res) {
+app.delete('/:id', async function (req, res) {
 	const meetingId = "http://data.lblod.info/id/zittingen/" + req.params.id;
 
 	// check if meeting has any published resource linked to it
