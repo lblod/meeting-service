@@ -16,14 +16,8 @@ app.delete('/:id', async function (req, res) {
 		PREFIX bv: <http://data.vlaanderen.be/ns/besluitvorming#>
     SELECT ?o1
     WHERE {
-      ${sparqlEscapeUri(meetingId)} besluit:heeftBesluitenlijst | 
-																		ext:hasVersionedNotulen | 
-																		ext:hasVersionedBehandeling | 
-																		^bv:isAgendaVoor ?o1 .
-      ?o2 ext:publishesBesluitenlijst |
-				  ext:publishesNotulen | 
-					ext:publishesBehandeling | 
-					ext:publishesAgenda ?o1.
+      ${sparqlEscapeUri(meetingId)} besluit:heeftBesluitenlijst | ext:hasVersionedNotulen | ext:hasVersionedBehandeling | ^bv:isAgendaVoor ?o1 .
+      ?o2 ext:publishesBesluitenlijst |ext:publishesNotulen | ext:publishesBehandeling | ext:publishesAgenda ?o1.
       ?o2 a sign:PublishedResource.
     }
   `;
