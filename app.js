@@ -1,14 +1,14 @@
-import { app, update, query, sparqlEscapeUri, errorHandler } from "mu";
+import { app, update, sparqlEscapeUri, errorHandler } from 'mu';
 
 app.get('/', function (req, res) {
-	res.send("Hello mu-javascript-template");
+  res.send('Hello mu-javascript-template');
 });
 
 app.delete('/:id', async function (req, res) {
-	const meetingId = "http://data.lblod.info/id/zittingen/" + req.params.id;
+  const meetingId = 'http://data.lblod.info/id/zittingen/' + req.params.id;
 
-	// check if meeting has any published resource linked to it
-	const publishedResourceQuery = ` 
+  // check if meeting has any published resource linked to it
+  const publishedResourceQuery = ` 
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
     PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
     PREFIX dct: <http://purl.org/dc/terms/>
@@ -22,8 +22,8 @@ app.delete('/:id', async function (req, res) {
     }
   `;
 
-	// Get all needed ids
-	const deletionQuery = `
+  // Get all needed ids
+  const deletionQuery = `
 	  PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 	  PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
 	  PREFIX dct: <http://purl.org/dc/terms/>
@@ -68,20 +68,20 @@ app.delete('/:id', async function (req, res) {
 			}
 	  }
 	`;
-	try {
-		const publishedResourcesResult = await update(publishedResourceQuery);
-		if (publishedResourcesResult.results.bindings.length) {
-			console.log(publishedResourcesResult.results.bindings);
-			res.sendStatus(409);
-		} else {
-			await update(deletionQuery);
-			res.sendStatus(204);
-		}
-	} catch (error) {
-		console.log(error);
-		res.sendStatus(404);
-		return;
-	}
+  try {
+    const publishedResourcesResult = await update(publishedResourceQuery);
+    if (publishedResourcesResult.results.bindings.length) {
+      console.log(publishedResourcesResult.results.bindings);
+      res.sendStatus(409);
+    } else {
+      await update(deletionQuery);
+      res.sendStatus(204);
+    }
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(404);
+    return;
+  }
 });
 
 app.use(errorHandler);
