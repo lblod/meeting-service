@@ -1,5 +1,11 @@
 # meeting-service
 
+## 0.0.5
+
+### Patch Changes
+
+- [`b38431e`](https://github.com/lblod/meeting-service/commit/b38431ea17f038c41df7e95b550311f67a0d2ceb) Thanks [@abeforgit](https://github.com/abeforgit)! - move to vx.x.x versioning system
+
 ## 0.0.4
 
 ### Patch Changes
